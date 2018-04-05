@@ -1,0 +1,73 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+
+<dom-module id="transaction-detail">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .iron-selected{
+        background: #b7b0b0;
+      }
+    </style>
+
+
+
+  </template>
+
+  <script>
+    /**
+     * `transaction-detail`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TransactionDetail extends Polymer.Element {
+
+      static get is() {
+        return 'transaction-detail';
+      }
+      static get properties() {
+        return {
+          url: String,
+          selectedTransItem: String
+        };
+      }
+
+      ready() {
+          super.ready();
+          this.currentTransItem = undefined;
+          this.previousTransItem = undefined;
+      }
+
+      triggerTransactionRequest() {
+        console.log("Trnasaction request");
+        this.$.transactionList.generateRequest();
+      }
+
+      handleResponse(response, data) {
+        // console.log("Response json ", response, data);
+        // Handle error or success
+        if(!!data) {
+          this.transactions = data.response;
+        } else {
+          throw Error("Api call issue");
+        }
+
+        console.log(data.response);
+      }
+
+      toggleTransDetail(event) {
+        console.log("toggle trans detail");
+        this.set("showDetailTrans", true);
+      }
+
+    }
+
+    window.customElements.define(TransactionList.is, TransactionList);
+  </script>
+</dom-module>

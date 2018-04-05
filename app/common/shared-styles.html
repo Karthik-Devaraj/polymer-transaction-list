@@ -1,0 +1,109 @@
+<dom-module id="shared-styles">
+    <template>
+        <style>
+            .show {
+                display: block;
+            }
+
+            .hide {
+                display: none !important;
+            }
+
+            .iron-selected {
+                background-color: #b7b0b0;
+            }
+
+            /* Transaction list csss */
+
+            .transaction-list-detail {
+                width: 100%;
+                padding-top: 20px;
+                min-height: 80vh;
+                border: 1px solid #cdcdcd;
+            }
+
+            .transaction-item-map {
+                width: 100%;
+                float: left;
+                min-height: 300px;
+                box-sizing: border-box;
+            }
+
+            .transaction-profile-picture {
+                float: left;
+            }
+
+            .transaction-detail {
+                width: 100%;
+                float: left;
+                padding: 50px 0 0 10px;
+                box-sizing: border-box;
+            }
+
+            .transaction-detail-left {
+                width: 70%;
+                float: left;
+                box-sizing: border-box;
+            }
+
+            .transaction-detail-right {
+                text-align: right;
+            }
+
+            .row {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0 16px;
+                display: inline-block;
+            }
+
+            .holder-company {
+                float: left;
+                padding-left: 10px;
+                line-height: 32px;
+            }
+
+            google-map {
+                width: 100%;
+                min-height: 300px;
+            }
+
+            .account-list {
+                float: left;
+                width: 50%;
+            }
+
+            .transaction-view {
+                float: left;
+                width: 50%;
+            }
+
+            .transaction-item-detail {
+                display: none;
+            }
+
+            @media only screen and (max-device-width: 768px) {
+                .transaction-item-map,
+                .transaction-detail {
+                    width: 50%;
+                }
+                .account-list {
+                    width: 98vw;
+                }
+                .transaction-view {
+                    display: none;
+                }
+
+
+                .transaction-list-detail {
+                    width: 96vw;
+                }
+
+                transaction-item {
+                    width: 96vw;
+                }
+
+            }
+        </style>
+    </template>
+</dom-module>

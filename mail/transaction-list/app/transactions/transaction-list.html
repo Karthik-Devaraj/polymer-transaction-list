@@ -1,0 +1,76 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="./transaction-item.html">
+<dom-module id="transaction-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      .iron-selected{
+        background-color: #b7b0b0;
+      }
+    </style>
+    <iron-ajax
+    id="transactionList"
+    url="{{url}}"
+    handle-as="json"
+    on-response="handleResponse"></iron-ajax>
+    <paper-listbox >
+      <template class="transaction-template" is="dom-repeat" items={{transactions}}
+        as="transaction" index-as=index>
+        <!-- Need to check about this index parameter, if possible we need to bind in click event handler -->
+        <transaction-item list-item="[[transaction]]" on-selected-changed="checkSelected"></transaction-item>
+        <!-- Reason for adding this extra div to hide/show the component before it's rendered -->
+      </template>
+    </paper-listbox>
+  </template>
+  <script>
+    /**
+     * `transaction-list`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TransactionList extends Polymer.Element {
+      static get is() {
+        return 'transaction-list';
+      }
+      static get properties() {
+        return {
+          url: String,
+          selected: {
+            type: String,
+            observer: '_checkSelectedValue',
+          }
+        };
+      }
+      ready() {
+          super.ready();
+      }
+      triggerTransactionRequest() {
+        this.$.transactionList.generateRequest();
+      }
+      checkSelected(value) {
+        console.log("Check selected ", arguments, value);
+        // let allTemplate = this.querySelector('paper-listbox .transaction-item-detail');
+        // allTemplate.forEach(function(element){
+        // });
+        // console.log(allTemplate);
+      }
+      handleResponse(response, data) {
+        // Handle error or success
+        if(!!data) {
+          this.transactions = data.response;
+        } else {
+          throw Error("Api call issue");
+        }
+      }
+    }
+    window.customElements.define(TransactionList.is, TransactionList);
+  </script>
+</dom-module>

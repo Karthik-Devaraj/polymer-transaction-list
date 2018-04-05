@@ -1,0 +1,90 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+
+<dom-module id="transaction-detail">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+        </style>
+
+        <div id="transListDetail" class="transaction-list-detail">
+            <div class="row">
+                <img src="[[listItem.picture]]" alt="Profile Picture" class="transaction-profile-picture" />
+                <div class="holder-company">[[listItem.company]]</div>
+            </div>
+            <div class="row">
+                <div class="transaction-item-map">
+                    <google-map fit-to-markers api-key="AIzaSyAiJebota4-Tyfr9gP6Xqlc-O-9vB71ce8">
+                        <google-map-marker latitude="[[listItem.latitude]]" longitude="[[listItem.longitude]]" draggable="true"></google-map-marker>
+                    </google-map>
+                </div>
+                <div class="transaction-detail">
+                    <div class="transaction-detail-left">
+                        <div>[[listItem.company]]</div>
+                        <div>[[listItem.address]]</div>
+                    </div>
+                    <div class="transaction-detail-right">
+                        <transaction-currency amount="[[listItem.amount]]" color="[[currencyColor]]"></transaction-currency>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </template>
+
+    <script>
+        /**
+         * `transaction-detail`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class TransactionDetail extends Polymer.Element {
+
+            static get is() {
+                return 'transaction-detail';
+            }
+            static get properties() {
+                return {
+                    listItem: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            static get observers() {
+                return [
+                    // Observer method name, followed by a list of dependencies, in parenthesis
+                    // Note: Binding observer for whole object is not best practice
+                    // Note: If you need to compare with
+                    '_transactionListChanged(listItem.date)'
+                ]
+            }
+
+
+            _transactionListChanged(date) {
+                this.newDate = this._formatTransactionDate(date);
+            }
+
+            _formatTransactionDate(newDate) {
+                let formatDate = undefined;
+                var l10nEN = new Intl.DateTimeFormat("en-US");
+                formatDate = l10nEN.format(new Date(newDate));
+                return formatDate;
+            }
+
+        }
+
+        window.customElements.define(TransactionDetail.is, TransactionDetail);
+    </script>
+</dom-module>

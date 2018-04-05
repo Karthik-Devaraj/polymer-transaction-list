@@ -1,0 +1,72 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+
+<dom-module id="acc-list-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-item data-id="[[listItem.id]]">
+      <paper-item-body two-line>
+        <div>[[listItem.iban]]</div>
+        <div secondary>[[accountName]]</div>
+      </paper-item-body>
+      <div class="currency">[[newAmount]]</div>
+    </paper-item>
+  </template>
+
+  <script>
+    /**
+     * `acc-list-item`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class AccListItem extends Polymer.Element {
+      static get is() {
+        return 'acc-list-item';
+      }
+      static get properties() {
+        return {
+          listItem: {
+            type: Object
+          },
+          accountName: {
+            computed: '_computeAccountHolderName(listItem.name, listItem.jointAccount)'
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          '_balanceAmountChanged(listItem.balance, filter)'
+        ]
+      }
+
+      _computeAccountHolderName (name, jointAccount) {
+        let jointAccountName = '';
+        if(jointAccount.length > 0) {
+          jointAccountName = jointAccount[0]['name'];
+        }
+        return `${name} - ${jointAccountName}`;
+      }
+
+      _balanceAmountChanged(newValue, oldValue) {
+        let newAmount = '';
+        var l10nEUR = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" })
+        if(newValue > 0) {
+          newAmount = `+`;
+        }
+        this.newAmount = `${newAmount}${l10nEUR.format(newValue)}`;
+      }
+    }
+
+    window.customElements.define(AccListItem.is, AccListItem);
+  </script>
+</dom-module>

@@ -1,0 +1,54 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-item/paper-item-body.html">
+<dom-module id="account-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-item data-id="[[listItem.id]]">
+      <paper-item-body two-line>
+        <div>[[listItem.iban]]</div>
+        <div secondary>[[accountName]]</div>
+      </paper-item-body>
+      <div class="currency"><currency-format amount="[[listItem.balance]]" color="[[currencyColor]]"></currency-format></div>
+    </paper-item>
+  </template>
+  <script>
+    /**
+     * `account-item`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class AccountItem extends Polymer.Element {
+      static get is() {
+        return 'account-item';
+      }
+      static get properties() {
+        return {
+          listItem: {
+            type: Object
+          },
+          accountName: {
+            computed: '_computeAccountHolderName(listItem.name, listItem.jointAccount)'
+          }
+        };
+      }
+      _computeAccountHolderName (name, jointAccount) {
+        let jointAccountName = '';
+        let jointConcat = '';
+        if(jointAccount.length > 0) {
+          jointAccountName = jointAccount[0]['name'];
+          jointConcat = `-`
+        }
+        return `${name} ${jointConcat} ${jointAccountName}`;
+      }
+    }
+    window.customElements.define(AccountItem.is, AccountItem);
+  </script>
+</dom-module>

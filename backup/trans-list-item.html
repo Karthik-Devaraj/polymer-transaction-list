@@ -1,0 +1,129 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+<link re="import" href="../iron-time/iron-time.html">
+<link rel="import" href="../google-map/google-map.html">
+<link rel="import" href="./transaction-currency.html">
+<link rel="import" href="./transaction-detail.html">
+<link rel="import" href="./shared-styles.html">
+
+<dom-module id="trans-list-item">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-item id="transactionItem">
+      <paper-item-body two-line>
+        <div>[[listItem.company]]</div>
+
+        <div secondary>[[newDate]]</div>
+      </paper-item-body>
+      <!-- <div class="currency">[[newAmount]] [[listItem.amount]]</div> -->
+      <transaction-currency amount="[[listItem.amount]]" color="[[currencyColor]]"></transaction-currency>
+    </paper-item>
+
+    <!-- <div id="transListDetail" hidden class="transaction-list-detail">
+        <div class="row">
+          <img src="[[listItem.picture]]" alt="Profile Picture" class="transaction-profile-picture"/>
+          <div class="holder-company">[[listItem.company]]</div>
+        </div>
+        <div class="row">
+          <div class="transaction-item-map">
+              <google-map fit-to-markers api-key="AIzaSyAiJebota4-Tyfr9gP6Xqlc-O-9vB71ce8">
+                <google-map-marker latitude="[[listItem.latitude]]" longitude="[[listItem.longitude]]" draggable="true"></google-map-marker>
+              </google-map>
+          </div>
+          <div class="transaction-detail">
+              <div class="transaction-detail-left">
+                  <div>[[listItem.company]]</div>
+                  <div>[[listItem.address]]</div>
+              </div>
+              <div class="transaction-detail-right"><transaction-currency amount="[[listItem.amount]]" color="[[currencyColor]]"></transaction-currency></div>
+          </div>
+        </div>
+
+
+      </div> -->
+      
+
+  </template>
+
+  <script>
+    /**
+     * `trans-list-item`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TransListItem extends Polymer.Element {
+      static get is() {
+        return 'trans-list-item';
+      }
+      static get properties() {
+        return {
+          listItem: {
+            type: Object
+          },
+          showDetail: String,
+          tabindex: String
+        };
+      }
+
+      static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          // Note: Binding observer for whole object is not best practice
+          // Note: If you need to compare with
+          '_transactionListChanged(listItem.amount, listItem.date)',
+          '_showTransDetail(showDetail, tabindex)'
+        ]
+      }
+
+      _showTransDetail (show, tabIndex) {
+        console.log("Show trans detail new value ",show, " ",tabIndex, this.$.transListDetail);
+        let transDetailDom = this.$.transListDetail;
+        if (tabIndex === "0") {
+          transDetailDom.removeAttribute('hidden');
+        } else {
+          transDetailDom.setAttribute('hidden', 'true');
+        }
+      }
+
+      _transactionListChanged (amount, date) {
+        // console.log("Oldvalue ",amount, " New value ",date);
+        this.newDate = this._formatTransactionDate(date);
+        let currencyColor = '';
+        if(amount > 0) {
+          currencyColor = 'positive';
+        } else {
+          currencyColor = 'negative';
+        }
+        this.set('currencyColor', currencyColor);
+        this.newAmount = this._transactionAmountChanged(amount);
+      }
+
+      _formatTransactionDate (newDate) {
+        let formatDate = undefined;
+        var l10nEN = new Intl.DateTimeFormat("en-US");
+        formatDate = l10nEN.format(new Date(newDate));
+        return formatDate;
+      }
+
+      _transactionAmountChanged (newValue) {
+        let newAmount = '';
+        var l10nEUR = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" })
+        if(newValue > 0) {
+          newAmount = `+`;
+        }
+        newAmount = `${newAmount}${l10nEUR.format(newValue)}`;
+        return newAmount;
+      }
+    }
+
+    window.customElements.define(TransListItem.is, TransListItem);
+  </script>
+</dom-module>

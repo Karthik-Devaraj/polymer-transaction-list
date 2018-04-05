@@ -1,0 +1,105 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../common/shared-styles.html">
+<dom-module id="transaction-detail">
+    <template is="dom-if" if="{{detailItem.company}}">
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+        </style>
+        <div id="transListDetail" class$="transaction-list-detail {{showDetail}}">
+            <div class="row">
+                <img src="[[detailItem.picture]]" alt="Profile Picture" class="transaction-profile-picture" />
+                <div class="holder-company">[[detailItem.company]]</div>
+            </div>
+            <div class="row">
+                <div class="transaction-item-map">
+                    <google-map fit-to-markers api-key="AIzaSyAiJebota4-Tyfr9gP6Xqlc-O-9vB71ce8">
+                        <google-map-marker latitude="[[detailItem.latitude]]" longitude="[[detailItem.longitude]]" draggable="true"></google-map-marker>
+                    </google-map>
+                </div>
+                <div class="transaction-detail">
+                    <div class="transaction-detail-left">
+                        <div>[[detailItem.company]]</div>
+                        <div>[[detailItem.address]]</div>
+                    </div>
+                    <div class="transaction-detail-right">
+                        <currency-format amount="[[detailItem.amount]]"></currency-format>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        /**
+         * `transaction-detail`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class TransactionDetail extends Polymer.Element {
+            static get is() {
+                return 'transaction-detail';
+            }
+            static get properties() {
+                return {
+                    detailItem: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                    },
+                    showDetail: {
+                        type: String,
+                        value: 'hide',
+                        default: 'hide'
+                    }
+                };
+            }
+
+            /**
+             *
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+                // console.log('list item ', detailItem.length, detailItem);
+                // if (detailItem.length > 0) {
+                //     this.set('showDetail', 'show');
+                // } else {
+                //     this.set('showDetail', 'hide');
+                // }
+                Polymer.RenderStatus.afterNextRender(this, function () {
+
+                });
+            }
+            static get observers() {
+                return [
+                    // Observer method name, followed by a list of dependencies, in parenthesis
+                    // Note: Binding observer for whole object is not best practice
+                    // Note: If you need to compare with
+                    '_transactionListChanged(detailItem.date)'
+                ]
+            }
+            _transactionListChanged(date) {
+                this.newDate = this._formatTransactionDate(date);
+            }
+            _formatTransactionDate(newDate) {
+                console.log('New Date ', newDate);
+                let formatDate = undefined;
+                if (!!newDate) {
+                    var l10nEN = new Intl.DateTimeFormat("en-US");
+                    formatDate = l10nEN.format(new Date(newDate));
+                }
+                return formatDate;
+            }
+        }
+        window.customElements.define(TransactionDetail.is, TransactionDetail);
+    </script>
+</dom-module>

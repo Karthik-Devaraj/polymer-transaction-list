@@ -1,0 +1,114 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-item/paper-item-body.html">
+<link re="import" href="../../../iron-time/iron-time.html">
+<link rel="import" href="../../../google-map/google-map.html">
+<link rel="import" href="../common/currency-format.html">
+<link rel="import" href="./transaction-detail.html">
+<link rel="import" href="../common/shared-styles.html">
+<dom-module id="transaction-item">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-item id="transactionItem" on-click="_selectTransaction">
+      <paper-item-body two-line>
+        <div>[[listItem.company]]</div>
+        <div secondary>[[newDate]]</div>
+      </paper-item-body>
+      <!-- <div class="currency">[[newAmount]] [[listItem.amount]]</div> -->
+      <currency-format amount="[[listItem.amount]]"></currency-format>
+    </paper-item>
+      <div id="transListDetail" class$="transaction-item-detail {{showDetail}}" >
+          <transaction-detail  detail-item="[[listItem]]" show-detail="[[showDetail]]"></transaction-detail>
+        </div>
+  </template>
+  <script>
+    /**
+     * `transaction-item`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TransactionItem extends Polymer.Element {
+      static get is() {
+        return 'transaction-item';
+      }
+      static get properties() {
+        return {
+          listItem: {
+            type: Object
+          },
+          showDetail: String,
+          tabindex: String,
+          selected: {
+            type: String,
+            // Need to check without notify
+            notify: true
+          }
+        };
+      }
+      static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          // Note: Binding observer for whole object is not best practice
+          // Note: If you need to compare with
+          '_transactionListChanged(listItem.amount, listItem.date)',
+          '_showTransDetail(showDetail, tabindex)'
+        ]
+      }
+      _selectTransaction() {
+        this.set('showDetail', 'show');
+        this.dispatchEvent(new CustomEvent('selected-transaction', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            transaction: this.listItem
+          }
+        }));
+      }
+      _showTransDetail (show, tabIndex) {
+        let transDetailDom = this.$.transListDetail;
+        if (tabIndex === "0") {
+          // TODO: This is with decoupling of component
+          this.set('selected', this.listItem.id);
+          // This is without decoupling
+          transDetailDom.removeAttribute('hidden');
+        } else {
+          transDetailDom.setAttribute('hidden', true);
+        }
+      }
+      _transactionListChanged (amount, date) {
+        this.newDate = this._formatTransactionDate(date);
+        // let currencyColor = '';
+        // if(amount > 0) {
+        //   currencyColor = 'positive';
+        // } else {
+        //   currencyColor = 'negative';
+        // }
+        // this.set('currencyColor', currencyColor);
+        this.newAmount = this._transactionAmountChanged(amount);
+      }
+      _formatTransactionDate (newDate) {
+        let formatDate = undefined;
+        var l10nEN = new Intl.DateTimeFormat("en-US");
+        formatDate = l10nEN.format(new Date(newDate));
+        return formatDate;
+      }
+      _transactionAmountChanged (newValue) {
+        let newAmount = '';
+        var l10nEUR = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" })
+        if(newValue > 0) {
+          newAmount = `+`;
+        }
+        newAmount = `${newAmount}${l10nEUR.format(newValue)}`;
+        return newAmount;
+      }
+    }
+    window.customElements.define(TransactionItem.is, TransactionItem);
+  </script>
+</dom-module>

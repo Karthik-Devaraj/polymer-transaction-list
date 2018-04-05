@@ -1,0 +1,73 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+
+<dom-module id="transaction-currency">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .positive {
+          color: green;
+      }
+
+      .negative {
+          color: red;
+      }
+    </style>
+
+    <div class$="currency [[color]]">{{changedamount}}</div>
+
+
+  </template>
+
+  <script>
+    /**
+     * `transaction-currency`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TransactionCurrency extends Polymer.Element {
+
+      static get is() {
+        return 'transaction-currency';
+      }
+      static get properties() {
+        return {
+          amount: {
+              type: String,
+            //   observer: '_updateCurrencyFormat',
+            //   computed: '_updateCurrencyFormat(amount)'
+          },
+          changedamount: {
+            type: String,
+            computed: '_updateCurrencyFormat(amount)'
+          },
+          color: String
+        };
+      }
+
+      ready() {
+          super.ready();
+      }
+
+      _updateCurrencyFormat(newValue, oldValue) {
+        let newAmount = '';
+        const l10nEUR = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
+        let newAmtVal = parseInt(newValue);
+        if(newAmtVal > 0) {
+          newAmount = `+`;
+        }
+        newAmount = `${newAmount}${l10nEUR.format(newAmtVal)}`;
+        return newAmount;
+      }
+
+    }
+
+    window.customElements.define(TransactionCurrency.is, TransactionCurrency);
+  </script>
+</dom-module>

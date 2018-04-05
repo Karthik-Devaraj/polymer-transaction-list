@@ -1,0 +1,80 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="./accounts/account-list.html">
+<link rel="import" href="./transactions/transaction-detail.html">
+<dom-module id="transaction-application">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+        </style>
+        <div class="account-list">
+            <account-list></account-list>
+        </div>
+        <div class="transaction-view">
+            <transaction-detail  detail-item="[[selectedTransaction]]" show-detail="[[showDetail]]"></transaction-detail>
+        </div>
+    </template>
+    <script>
+        /**
+         * `transaction-application`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class TransactionApplication extends Polymer.Element {
+            static get is() {
+                return 'transaction-application';
+            }
+
+            static get properties() {
+                return {
+                accounts: {
+                    type: Object,
+                    value: function () {
+                    return {};
+                    }
+                },
+                _transactionListUrl: {
+                    type: String
+                },
+                selectedTransaction: {
+                    type: Object,
+                    value :  function () {
+                        return null;
+                    }
+                }
+                };
+            }
+
+            /**
+             *
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+
+                // When possible, use afterNextRender to defer non-critical
+                // work until after first paint.
+                Polymer.RenderStatus.afterNextRender(this, function () {
+
+                });
+                this.set('showDetail', 'hide');
+                this.addEventListener('selected-account', this._selectedAccount);
+                this.addEventListener('selected-transaction', this._selectedTransaction);
+            }
+
+            _selectedTransaction() {
+                this.set('selectedTransaction', event.detail.transaction);
+                this.set('showDetail', 'show');
+            }
+        }
+        window.customElements.define(TransactionApplication.is, TransactionApplication);
+    </script>
+</dom-module>

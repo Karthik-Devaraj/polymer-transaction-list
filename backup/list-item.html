@@ -1,0 +1,51 @@
+<link rel="import" href="./bower_components/polymer/polymer-element.html">
+<!-- <link rel="import" href="./bower_components/paper-item/paper-item.html">
+<link rel="import" href="./bower_components/paper-item/paper-item-body.html"> -->
+
+<dom-module id="trans-list-item">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <div style="color:black;">Test list item</div>
+        <!-- <paper-item>
+            Test paper item
+        </paper-item> -->
+
+    </template>
+
+    <script>
+        /**
+         * `popup-info`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class ListItem2 extends Polymer.Element {
+            static get is() {
+                return 'trans-list-item';
+            }
+            static get properties() {
+                return {
+                    beneficiary: {
+                        type: String,
+                        value: "Beneficiary Name"
+                    },
+                    transactiondate: {
+                        type: String,
+                        value: "10/02/2018"
+                    },
+                    transactionamount: {
+                        type: String
+                    }
+                };
+            }
+        }
+
+        window.customElements.define(ListItem2.is, ListItem2);
+    </script>
+</dom-module>

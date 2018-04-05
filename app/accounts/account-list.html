@@ -1,0 +1,81 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../../../neon-animation/web-animations.html">
+<link rel="import" href="../../../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../iron-ajax/iron-ajax.html">
+<link rel="import" href="./account-item.html">
+<link rel="import" href="../transactions/transaction-list.html">
+<dom-module id="account-list">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-dropdown-menu
+            {
+                width: calc(100% - 10px);
+                box-sizing: border-box;
+            }
+            paper-listbox {
+                width: calc(100vw - 10px);
+            }
+        </style>
+        <!-- TODO: Url needs to be removed -->
+        <iron-ajax
+        auto
+        id="accountList"
+        url="[[accountUrl]]"
+        handle-as="json"
+        on-response="handleResponse"
+        >
+        </iron-ajax>
+        <paper-dropdown-menu label="Choose Account" id="accountDropdown" vertical-offset="50">
+            <paper-listbox slot="dropdown-content">
+                <template is="dom-repeat" items={{accounts}} as="account" >
+                    <account-item id="[[account.id]]" list-item="[[account]]">
+                        {{account.iban}}
+                    </account-item>
+                </template>
+            </paper-listbox>
+        </paper-dropdown-menu>
+        <!-- TODO: This needs to be moved outside -->
+        <transaction-list url="[[transactionUrl]]" id="transaction">
+        </transaction-list>
+    </template>
+    <script>
+        /**
+         * `account-list`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class AccountList extends Polymer.Element {
+            static get is() {
+                return 'account-list';
+            }
+            handleResponse(response, data) {
+                // Handle error or success
+                if(!!data) {
+                    this.accounts = data.response;
+                } else {
+                    throw Error("Api call issue");
+                }
+            }
+            ready() {
+                super.ready();
+                this.accountUrl = 'https://api.myjson.com/bins/uoze3';
+                this.$.accountDropdown.addEventListener('iron-select', event => this.dropdownSelect(event));
+            }
+            dropdownSelect(event) {
+                let transactionId = event.detail.item.id;
+                let transactionUrl = `https://api.myjson.com/bins/${transactionId}`;
+                this.set('transactionUrl', transactionUrl);
+                this.$.transaction.triggerTransactionRequest();
+            }
+        }
+        window.customElements.define(AccountList.is, AccountList);
+    </script>
+</dom-module>
