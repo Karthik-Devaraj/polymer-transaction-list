@@ -25,7 +25,7 @@
       <currency-format amount="[[listItem.amount]]"></currency-format>
     </paper-item>
     <div id="transListDetail" class$="transaction-item-detail {{showDetailHide}}">
-      <transaction-detail detail-item="[[listItem]]" show-detail="[[showDetail]]"></transaction-detail>
+      <transaction-detail detail-item="[[listItem]]"></transaction-detail>
     </div>
   </template>
   <script>
@@ -71,6 +71,7 @@
           }
         }));
       }
+      // TODO: Needs to be removed, once we decouple the component
       _showTransDetail(smallScreen, tabIndex) {
         let transDetailDom = this.$.transListDetail;
         if (tabIndex === "0" && !!smallScreen) {

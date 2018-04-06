@@ -1,6 +1,7 @@
 <link rel="import" href="../../../polymer/polymer-element.html">
 <link rel="import" href="../../../paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="./transaction-item.html">
 <dom-module id="transaction-list">
@@ -14,15 +15,16 @@
         background-color: #b7b0b0;
       }
     </style>
+    <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
     <iron-ajax id="transactionList" url="{{url}}" handle-as="json" on-response="handleResponse"></iron-ajax>
     <paper-listbox attr-for-selected="id" selected="{{transactionItemId}}">
       <template class="transaction-template" is="dom-repeat" items={{transactions}} as="transaction" index-as=index>
         <!-- Need to check about this index parameter, if possible we need to bind in click event handler -->
         <transaction-item id="[[index]]" list-item="[[transaction]]" tabindex="{{selectedTransactionItem}}" on-selected-changed="checkSelected"></transaction-item>
         <!-- Reason for adding this extra div to hide/show the component before it's rendered -->
-        <div id="transListDetail" class$="transaction-item-detail {{showDetailHide}}">
-          <transaction-detail detail-item="[[listItem]]" show-detail="[[showDetail]]"></transaction-detail>
-        </div>
+        <!-- <div data-transaction-detail-id$="[[index]]" class$="transaction-item-detail {{showDetailHide}}" hidden>
+          <transaction-detail detail-item="[[listItem]]"></transaction-detail>
+        </div> -->
       </template>
     </paper-listbox>
   </template>
@@ -51,19 +53,26 @@
           }
         };
       }
+      static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          // Note: Binding observer for whole object is not best practice
+          // Note: If you need to compare with
+          '_showTransDetail(smallScreen, transactionItemId, tabindex)',
+        ]
+      }
+      constructor() {
+        super();
+      }
       ready() {
         super.ready();
+        this._previousTransactionId = undefined;
+        this._cuurentTransactionId = undefined;
       }
       triggerTransactionRequest() {
         this.$.transactionList.generateRequest();
       }
-      checkSelected(value) {
-        // console.log("Check selected ", arguments, value);
-        // let allTemplate = this.querySelector('paper-listbox .transaction-item-detail');
-        // allTemplate.forEach(function(element){
-        // });
-        // console.log(allTemplate);
-      }
+
       handleResponse(response, data) {
         // Handle error or success
         if (!!data) {
@@ -71,6 +80,40 @@
         } else {
           throw Error("Api call issue");
         }
+      }
+
+      // Need to check, how to get the value changed element using observer
+      _showTransDetail(smallScreen, transactionItemId, tabindex) {
+        if (!!transactionItemId) {
+          this._previousTransactionId = this._cuurentTransactionId;
+          this._cuurentTransactionId = transactionItemId;
+          let currentTransactionDom = this.shadowRoot.querySelector(
+            `[data-transaction-detail-id="${this._cuurentTransactionId}"`);
+          let previousTransactionDom = this.shadowRoot.querySelector(
+            `[data-transaction-detail-id="${this._previousTransactionId}"`);
+          if (!!currentTransactionDom) {
+            currentTransactionDom.removeAttribute('hidden');
+          }
+
+          if (!!previousTransactionDom) {
+            previousTransactionDom.setAttribute('hidden', true);
+          }
+        }
+        // if (tabIndex === "0" && !!smallScreen) {
+        //   // TODO: This is with decoupling of component
+        //   this.set('selected', this.listItem.id);
+        //   // This is without decoupling
+        //   // transDetailDom.removeAttribute('hidden');
+        //   // if (!!smallScreen) {
+        //   this.set('showDetail', 'show');
+        //   this.set('showDetailHide', 'show');
+        //   // }
+
+        // } else {
+        //   // transDetailDom.setAttribute('hidden', true);
+        //   this.set('showDetail', 'hide');
+        //   this.set('showDetailHide', 'hide');
+        // }
       }
     }
     window.customElements.define(TransactionList.is, TransactionList);
