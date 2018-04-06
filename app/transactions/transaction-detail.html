@@ -1,24 +1,20 @@
 <link rel="import" href="../../../polymer/polymer-element.html">
-<!-- <link rel="import" href="../../../polymer/lib/elements/dom-if.html"> -->
 <link rel="import" href="../common/shared-styles.html">
 <dom-module id="transaction-detail">
-    <!-- <dom-if if=[[_shouldShowDetail]]> -->
-    <template hidden>
+    <template>
         <style include="shared-styles">
             :host {
-                /* display: block; */
+                display: block;
             }
         </style>
-        <pre>sdsd[[showDetailDom]]</pre>
-        <div id="transListDetail" class$="transaction-list-detail" >
-            {{showDetailDom}}
+        <div id="transListDetail" class="transaction-list-detail">
             <div class="row">
-                <img src="[[detailItem.picture]]" alt="Profile Picture" class="transaction-profile-picture"/>
+                <img src="[[detailItem.picture]]" alt="Profile Picture" class="transaction-profile-picture" />
                 <div class="holder-company">[[detailItem.company]]</div>
             </div>
             <div class="row">
                 <div class="transaction-item-map">
-                    <google-map  fit-to-markers api-key="AIzaSyAiJebota4-Tyfr9gP6Xqlc-O-9vB71ce8">
+                    <google-map fit-to-markers api-key="AIzaSyAiJebota4-Tyfr9gP6Xqlc-O-9vB71ce8">
                         <google-map-marker latitude="[[detailItem.latitude]]" longitude="[[detailItem.longitude]]" draggable="true"></google-map-marker>
                     </google-map>
                 </div>
@@ -34,7 +30,6 @@
             </div>
         </div>
     </template>
-<!-- </dom-if> -->
     <script>
         /**
          * `transaction-detail`
@@ -52,38 +47,10 @@
                 return {
                     detailItem: {
                         type: Object
-                    },
-                    showDetail: {
-                        type: String,
-                        value: 'hide',
-                        default: 'hide'
-                    },
-                    _shouldShowDetail: {
-                        computed: '_computeShouldRenderDetail(detailItem)'
                     }
                 };
             }
 
-            /**
-             *
-             * @constructor
-             */
-            constructor() {
-                super();
-            }
-
-            ready() {
-                super.ready();
-                // console.log('list item ', detailItem.length, detailItem);
-                // if (detailItem.length > 0) {
-                //     this.set('showDetail', 'show');
-                // } else {
-                //     this.set('showDetail', 'hide');
-                // }
-                // Polymer.RenderStatus.afterNextRender(this, function () {
-
-                // });
-            }
             static get observers() {
                 return [
                     // Observer method name, followed by a list of dependencies, in parenthesis
@@ -93,23 +60,11 @@
                 ]
             }
 
-            _computeShouldRenderDetail (detailItem) {
-                console.log("Render detail in dom if ", (!!detailItem && detailItem.id));
-                let transDetailDom = this.$.transListDetail;
-                if(!!detailItem && detailItem.id) {
-                    transDetailDom.removeAttribute('hidden');
-                    return true;
-                } else {
-                    transDetailDom.setAttribute('hidden', true);
-                    return false;
-                }
-            }
-
             _transactionListChanged(date) {
                 this.newDate = this._formatTransactionDate(date);
             }
             _formatTransactionDate(newDate) {
-                console.log('New Date ', newDate);
+                // console.log('New Date ', newDate);
                 let formatDate = undefined;
                 if (!!newDate) {
                     var l10nEN = new Intl.DateTimeFormat("en-US");

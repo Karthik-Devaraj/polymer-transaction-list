@@ -1,4 +1,5 @@
 <link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../iron-media-query/iron-media-query.html">
 <link rel="import" href="./accounts/account-list.html">
 <link rel="import" href="./transactions/transaction-detail.html">
 <dom-module id="transaction-application">
@@ -8,11 +9,17 @@
                 display: block;
             }
         </style>
+        <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
+
         <div class="account-list">
             <account-list></account-list>
         </div>
-        <div class="transaction-view">
-            <transaction-detail  detail-item="[[selectedTransaction]]" show-detail="{{showDetail}}"></transaction-detail>
+        <div class$="transaction-view {{_showDetailDomHide}}">
+            <dom-if if="[[_shouldRenderDetail]]">
+                <template>
+                    <transaction-detail detail-item="{{selectedTransaction}}"></transaction-detail>
+                </template>
+            </dom-if>
         </div>
     </template>
     <script>
@@ -31,22 +38,34 @@
 
             static get properties() {
                 return {
-                accounts: {
-                    type: Object,
-                    value: function () {
-                    return {};
+                    accounts: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+                    _transactionListUrl: {
+                        type: String
+                    },
+                    selectedTransaction: {
+                        type: Object,
+                        value: function () {
+                            return null;
+                        }
+                    },
+                    _shouldRenderDetail: {
+                        computed: '_computeShouldRenderDetail(selectedTransaction)'
                     }
-                },
-                _transactionListUrl: {
-                    type: String
-                },
-                selectedTransaction: {
-                    type: Object,
-                    value :  function () {
-                        return null;
-                    }
-                }
                 };
+            }
+
+            static get observers() {
+                return [
+                    // Observer method name, followed by a list of dependencies, in parenthesis
+                    // Note: Binding observer for whole object is not best practice
+                    // Note: If you need to compare with
+                    '_showTransactionDetail(smallScreen)'
+                ]
             }
 
             /**
@@ -63,16 +82,34 @@
                 // When possible, use afterNextRender to defer non-critical
                 // work until after first paint.
                 Polymer.RenderStatus.afterNextRender(this, function () {
-
+                    this.addEventListener('selected-transaction', this._selectedTransaction);
                 });
                 this.set('showDetail', 'hide');
-                this.addEventListener('facebook-status-post', this._selectedAccount);
-                this.addEventListener('selected-transaction', this._selectedTransaction);
             }
 
             _selectedTransaction() {
                 this.set('selectedTransaction', event.detail.transaction);
                 this.set('showDetail', 'show');
+            }
+
+            _computeShouldRenderDetail(selectedTransaction) {
+                if (!!selectedTransaction) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            _showTransactionDetail(smallScreen) {
+                if (!!smallScreen) {
+                    this.set('showDetail', 'hide');
+                    this.set('_showDetailDomHide', 'hide');
+                    this.set('_shouldShowDetail', false);
+                } else {
+                    this.set('showDetail', 'show');
+                    this.set('_showDetailDomHide', 'show');
+                    this.set('_shouldShowDetail', true);
+                }
             }
         }
         window.customElements.define(TransactionApplication.is, TransactionApplication);

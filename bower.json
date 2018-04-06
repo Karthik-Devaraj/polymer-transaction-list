@@ -10,7 +10,8 @@
     "web-animations-js": "^2.3.1",
     "neon-animation": "PolymerElements/neon-animation#^2.2.1",
     "iron-time": "cloudily/iron-time#^0.1.1",
-    "google-map": "GoogleWebComponents/google-map#^2.0.4"
+    "google-map": "GoogleWebComponents/google-map#^2.0.4",
+    "iron-media-query": "polymerelements/iron-media-query#^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

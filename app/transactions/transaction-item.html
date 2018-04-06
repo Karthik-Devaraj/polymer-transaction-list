@@ -3,6 +3,7 @@
 <link rel="import" href="../../../paper-item/paper-item-body.html">
 <link re="import" href="../../../iron-time/iron-time.html">
 <link rel="import" href="../../../google-map/google-map.html">
+<link rel="import" href="../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../common/currency-format.html">
 <link rel="import" href="./transaction-detail.html">
 <link rel="import" href="../common/shared-styles.html">
@@ -13,7 +14,9 @@
         display: block;
       }
     </style>
-    <paper-item id="transactionItem" on-click="_selectTransaction">
+    <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
+
+    <paper-item id="transactionItem" on-tap="_selectTransaction">
       <paper-item-body two-line>
         <div>[[listItem.company]]</div>
         <div secondary>[[newDate]]</div>
@@ -21,9 +24,9 @@
       <!-- <div class="currency">[[newAmount]] [[listItem.amount]]</div> -->
       <currency-format amount="[[listItem.amount]]"></currency-format>
     </paper-item>
-    <!-- <div id="transListDetail" class$="transaction-item-detail {{showDetail}}" >
-          <transaction-detail  detail-item="[[listItem]]" show-detail="[[showDetail]]"></transaction-detail>
-        </div> -->
+    <div id="transListDetail" class$="transaction-item-detail {{showDetailHide}}">
+      <transaction-detail detail-item="[[listItem]]" show-detail="[[showDetail]]"></transaction-detail>
+    </div>
   </template>
   <script>
     /**
@@ -43,13 +46,10 @@
           listItem: {
             type: Object
           },
-          showDetail: String,
           tabindex: String,
-          selected: {
-            type: String,
-            // Need to check without notify
-            notify: true
-          }
+          // _computeShowDetail: {
+          //   computed: '_computeShouldShowDetail(smallScreen)'
+          // }
         };
       }
       static get observers() {
@@ -58,11 +58,11 @@
           // Note: Binding observer for whole object is not best practice
           // Note: If you need to compare with
           '_transactionListChanged(listItem.amount, listItem.date)',
-          '_showTransDetail(showDetail, tabindex)'
+          '_showTransDetail(smallScreen, tabindex)'
         ]
       }
       _selectTransaction() {
-        this.set('showDetail', 'show');
+        // this.set('showDetail', 'show');
         this.dispatchEvent(new CustomEvent('selected-transaction', {
           bubbles: true,
           composed: true,
@@ -71,17 +71,30 @@
           }
         }));
       }
-      _showTransDetail(show, tabIndex) {
+      _showTransDetail(smallScreen, tabIndex) {
         let transDetailDom = this.$.transListDetail;
-        if (tabIndex === "0") {
+        if (tabIndex === "0" && !!smallScreen) {
           // TODO: This is with decoupling of component
           this.set('selected', this.listItem.id);
           // This is without decoupling
-          transDetailDom.removeAttribute('hidden');
+          // transDetailDom.removeAttribute('hidden');
+          // if (!!smallScreen) {
+          this.set('showDetail', 'show');
+          this.set('showDetailHide', 'show');
+          // }
+
         } else {
-          transDetailDom.setAttribute('hidden', true);
+          // transDetailDom.setAttribute('hidden', true);
+          this.set('showDetail', 'hide');
+          this.set('showDetailHide', 'hide');
         }
       }
+
+      // _computeShouldShowDetail(smallScreen) {
+      //   if (!!smallScreen) {
+      //     this.set('showDetailHide', 'hide');
+      //   }
+      // }
       _transactionListChanged(amount, date) {
         this.newDate = this._formatTransactionDate(date);
         // let currencyColor = '';
